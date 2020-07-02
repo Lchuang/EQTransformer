@@ -170,11 +170,11 @@ def makeStationList_from_csv(csv_station_list, min_lat=-90, max_lat=90, min_lon=
 
     pd_station_list = pd.read_csv(csv_station_list)
 
-    # check csv file header
+    # --- check csv file header
     if not all([item in pd_station_list.columns for item in ['station', 'stla', 'stlo', 'stel', 'channel']]):
         raise ImportError('csv file header must contain key words: station, stla, stlo, stel, channel')
 
-    # check coordinate format stlo = [-180,180], stla = [-90, 90]
+    # --- check coordinate format stlo = [-180,180], stla = [-90, 90]
     if min(pd_station_list.stla) < -90 or max(pd_station_list.stla) > 90 or \
             min(pd_station_list.stlo) < -180 or max(pd_station_list.stlo) > 180:
         raise ValueError('stlo must be in the range of [-180,180], and stla must be in the range of [-90, 90]')
