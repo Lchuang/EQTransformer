@@ -18,6 +18,7 @@ import shutil
 from multiprocessing.pool import ThreadPool
 import multiprocessing
 import numpy as np
+import pandas as pd
 
 
 def makeStationList(client_list, min_lat, max_lat, min_lon, max_lon, start_time, end_time, channel_list=[], filter_network=[], filter_station=[]):
@@ -122,7 +123,47 @@ def makeStationList(client_list, min_lat, max_lat, min_lon, max_lon, start_time,
          
          
          
-         
+def makeStationList_from_csv(pd_station_list, min_lat=[], max_lat=[], min_lon=[], max_lon=[], start_time=[], end_time=[],
+                          channel_list=[], filter_network=[], filter_station=[]):
+
+
+    """
+
+    Create station list in Json format from a csv file
+
+    Parameters
+    ----------
+    pd_station_list: csv file
+        A list containing the station names, .
+
+    filter_station: str, default=[]
+        A list containing the station names that need to be avoided.
+
+    channel_list: str, default=[]
+        A list containing the desired channel codes. Defaults to [] --> all channels
+
+    filter_network: str, default=[]
+        A list containing the network codes that need to be avoided.
+
+    min_lat: float, default=-90
+        Min latitude of the region.
+
+    max_lat: float, default=90
+        Max latitude of the region.
+
+    min_lon: float, default=-180
+        Min longitude of the region.
+
+    max_lon: float, default=180
+        Max longitude of the region.
+
+    """
+
+
+
+
+
+
 def downloadMseeds(client_list, stations_json, output_dir, start_time, end_time, min_lat, max_lat, min_lon, max_lon, chunk_size, channel_list=[], n_processor=None):
     
     
@@ -387,4 +428,3 @@ def _get_data(**kwargs):
             out = 1            
     return out
 
-    
