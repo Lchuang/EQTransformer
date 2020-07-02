@@ -123,8 +123,8 @@ def makeStationList(client_list, min_lat, max_lat, min_lon, max_lon, start_time,
          
          
          
-def makeStationList_from_csv(pd_station_list, min_lat=[], max_lat=[], min_lon=[], max_lon=[], start_time=[], end_time=[],
-                          channel_list=[], filter_network=[], filter_station=[]):
+def makeStationList_from_csv(csv_station_list, min_lat=-90, max_lat=90, min_lon=-180, max_lon=180,
+                             channel_list=[], filter_network=[], filter_station=[]):
 
 
     """
@@ -134,7 +134,16 @@ def makeStationList_from_csv(pd_station_list, min_lat=[], max_lat=[], min_lon=[]
     Parameters
     ----------
     pd_station_list: csv file
-        A list containing the station names, .
+        A list containing the station info.
+        Header includes: station, network, channel, stla, stlo, stbt, stet
+        station: station name
+        network: network name
+        channel: channel name
+        stla: station location, latitude
+        stlo: station location, longitude
+        stbt: start time of recording
+        stet: end time of recording
+
 
     filter_station: str, default=[]
         A list containing the station names that need to be avoided.
@@ -151,17 +160,60 @@ def makeStationList_from_csv(pd_station_list, min_lat=[], max_lat=[], min_lon=[]
     max_lat: float, default=90
         Max latitude of the region.
 
-    min_lon: float, default=-180
+    min_lon: float, default=[]
         Min longitude of the region.
 
-    max_lon: float, default=180
+    max_lon: float, default=[]
         Max longitude of the region.
 
     """
 
+    pd_station_list = pd.read_csv(csv_station_list)
 
+    # --- check csv file header
+    if not all([item in pd_station_list.columns for item in ['station', 'stla', 'stlo', 'stel', 'channel']]):
+        raise ImportError('csv file header must contain key words: station, stla, stlo, stel, channel')
 
+    # --- check coordinate format stlo = [-180,180], stla = [-90, 90]
+    if min(pd_station_list.stla) < -90 or max(pd_station_list.stla) > 90 or \
+            min(pd_station_list.stlo) < -180 or max(pd_station_list.stlo) > 180:
+        raise ValueError('stlo must be in the range of [-180,180], and stla must be in the range of [-90, 90]')
 
+    # start filter stations based on variables given
+
+    # --- filter by location
+    pd_station_list = pd_station_list.loc[(pd_station_list["stla"] >= min_lat)]
+    pd_station_list = pd_station_list.loc[(pd_station_list["stla"] <= max_lat)]
+    pd_station_list = pd_station_list.loc[(pd_station_list["stlo"] >= min_lon)]
+    pd_station_list = pd_station_list.loc[(pd_station_list["stlo"] <= max_lon)]
+
+    # --- filter by channel list
+    if bool(channel_list):
+        pd_station_list = pd_station_list[pd_station_list["chanel"].isin(channel_list)]
+
+    # --- filter by network list
+    if bool(filter_network):
+        pd_station_list = pd_station_list[~pd_station_list["network"].isin(filter_network)]
+
+    # --- filter by station list
+    if bool(filter_network):
+        pd_station_list = pd_station_list[~pd_station_list["station"].isin(filter_station)]
+
+    # ---- make .json file
+    stations = np.unique(pd_station_list.station)
+    station_list = dict.fromkeys(stations)
+    for i in range(0, len(stations)):
+        sta = stations[i]
+        pd_sta = pd_station_list[pd_station_list.station == sta]
+        station_list[sta] = {"network": pd_sta.iloc[0].network,
+                             "channels": list(set(pd_sta.channel)),
+                             "coords": [float(pd_sta.iloc[0].stla),
+                                        float(pd_sta.iloc[0].stlo),
+                                        float(pd_sta.iloc[0].stel)]
+                             }
+    print(station_list)
+    with open('station_list.json', 'w') as fp:
+        json.dump(station_list, fp)
 
 
 def downloadMseeds(client_list, stations_json, output_dir, start_time, end_time, min_lat, max_lat, min_lon, max_lon, chunk_size, channel_list=[], n_processor=None):
