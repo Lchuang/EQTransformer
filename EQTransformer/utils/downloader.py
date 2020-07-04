@@ -189,7 +189,7 @@ def makeStationList_from_csv(csv_station_list, min_lat=-90, max_lat=90, min_lon=
 
     # --- filter by channel list
     if bool(channel_list):
-        pd_station_list = pd_station_list[pd_station_list["chanel"].isin(channel_list)]
+        pd_station_list = pd_station_list[pd_station_list["channel"].isin(channel_list)]
 
     # --- filter by network list
     if bool(filter_network):
