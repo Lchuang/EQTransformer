@@ -62,7 +62,7 @@ def creat_mseed_from_daily_sac(input_dir='sac_file',
             # ---- convert files to miniseed files
             for single_sac_file in all_sac_files:
                 st = read(single_sac_file)
-                btime = str(st[0].stats.starttime.datetime)
-                etime = str(st[0].stats.starttime.endtime)
+                btime = str(st[0].stats.starttime)
+                etime = str(st[0].stats.endtime)
                 mseed_file_name = f'{network}.{station}.{channel}__{btime}__{etime}.mseed'
                 st.write(mseed_file_name)
