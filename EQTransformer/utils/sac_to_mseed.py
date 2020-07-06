@@ -65,4 +65,4 @@ def creat_mseed_from_daily_sac(input_dir='sac_file',
                 btime = str(st[0].stats.starttime)
                 etime = str(st[0].stats.endtime)
                 mseed_file_name = f'{network}.{station}.{channel}__{btime}__{etime}.mseed'
-                st.write(mseed_file_name)
+                st.write(f'{output_dir}/{station}/{mseed_file_name}')
