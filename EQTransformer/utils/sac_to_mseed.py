@@ -58,7 +58,7 @@ def creat_mseed_from_daily_sac(input_dir='sac_file',
         network = meta["network"]
         for channel in meta["channels"]:
             # ---- search sac files recursively in the input folder
-            all_sac_files = glob.glob(f'{input_dir}/**/.{station}.{channel}.SAC', recursive=True)
+            all_sac_files = glob.glob(f'{input_dir}/**/*.{station}.{channel}.SAC', recursive=True)
             # ---- convert files to miniseed files
             for single_sac_file in all_sac_files:
                 st = read(single_sac_file)
