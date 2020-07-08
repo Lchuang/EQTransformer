@@ -255,8 +255,11 @@ def mseed_predictor(input_dir='downloads_mseeds',
         print(f'========= Started working on {st}, {ct+1} out of {len(station_list)} ...', flush=True)
 
         start_Predicting = time.time()       
-        
-        file_list = [join(st, ev) for ev in listdir(args['input_dir']+'/'+st) if ev.split('/')[-1].split('.')[-1].lower() == 'mseed'];   
+
+        file_list = [join(st, ev) for ev in listdir(args['input_dir']+'/'+st) if
+                     (ev.split('/')[-1].split('.')[-1].lower() == 'mseed') or
+                     (ev.split('/')[-1].split('.')[-1].lower() == 'sac')];
+
         mon = [ev.split('__')[1]+'__'+ev.split('__')[2] for ev in file_list ];
         uni_list = list(set(mon))
         uni_list.sort()  
